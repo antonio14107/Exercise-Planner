@@ -9,6 +9,9 @@ app = Flask(__name__)
 # OpenAI API setup
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+# Log to confirm API key access in Render logs
+print(f"OpenAI API Key Found: {'OPENAI_API_KEY' in os.environ}")
+
 # Route for the home page
 @app.route("/")
 def index():
@@ -46,7 +49,7 @@ def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
     """
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4-turbo",  # Use "gpt-4-turbo" for compatibility
+            model="gpt-4-turbo",  # Use "gpt-4-turbo" or "gpt-3.5-turbo" based on your access
             messages=[
                 {"role": "system", "content": "You are a professional fitness coach."},
                 {"role": "user", "content": prompt},
@@ -63,7 +66,7 @@ def save_plan_as_pdf(plan):
     pdf.add_page()
     pdf.set_font("Arial", size=12)
     pdf.multi_cell(0, 10, plan)
-    filename = os.path.join(os.getcwd(), f"fitness_plan.pdf")
+    filename = os.path.join(os.getcwd(), "fitness_plan.pdf")
     pdf.output(filename)
     return filename
 
