@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Exercise Planner</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>AI Exercise Planner</h1>
+    <form action="/plan" method="POST" onsubmit="setLoadingState()">
+        <label for="goals">Enter your fitness goals:</label><br>
+        <textarea id="goals" name="goals" rows="3" cols="50" required></textarea><br><br>
+
+        <label for="preferences">Enter your workout preferences:</label><br>
+        <textarea id="preferences" name="preferences" rows="3" cols="50" required></textarea><br><br>
+
+        <label for="equipment">List your available equipment:</label><br>
+        <textarea id="equipment" name="equipment" rows="3" cols="50" required></textarea><br><br>
+
+        <label for="intensity">Select your workout intensity:</label><br>
+        <select id="intensity" name="intensity" required>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+        </select><br><br>
+
+        <label for="duration">Select workout duration (minutes):</label><br>
+        <select id="duration" name="duration" required>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+        </select><br><br>
+
+        <button id="submitButton" type="submit">Generate Plan</button>
+    </form>
+
+    <script>
+        function setLoadingState() {
+            const button = document.getElementById('submitButton');
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner"></span> Generating...';
+        }
+    </script>
+</body>
+</html>
