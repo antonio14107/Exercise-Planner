@@ -16,7 +16,6 @@ def index():
 
 # Function to generate the fitness plan
 def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
-    # Updated Prompt
     prompt = f"""
     You are a professional fitness coach with extensive experience in creating personalized workout plans. Your goal is to provide users with a structured, effective, and safe exercise routine tailored to their fitness goals, preferences, available equipment, intensity level, and desired duration.
 
@@ -45,10 +44,9 @@ def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
     - User Goals: {goals}
     - User Preferences: {preferences}
     """
-
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # Ensure you have access to GPT-4 or use gpt-3.5-turbo
+            model="gpt-4",  # Use gpt-4 or gpt-3.5-turbo based on your API access
             messages=[
                 {"role": "system", "content": "You are a professional fitness coach."},
                 {"role": "user", "content": prompt},
