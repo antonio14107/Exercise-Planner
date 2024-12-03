@@ -46,7 +46,7 @@ def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
     """
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",  # Use gpt-4 or gpt-3.5-turbo based on your API access
+            model="gpt-4-turbo",  # Use "gpt-4-turbo" for compatibility
             messages=[
                 {"role": "system", "content": "You are a professional fitness coach."},
                 {"role": "user", "content": prompt},
