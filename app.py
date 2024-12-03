@@ -16,16 +16,41 @@ def index():
 
 # Function to generate the fitness plan
 def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
-    prompt = (
-        f"You are a professional fitness coach. Create a detailed, structured weekly workout plan for someone whose goal is '{goals}', "
-        f"prefers '{preferences}', and has access to the following equipment: '{equipment}'. The intensity level should be '{intensity}', "
-        f"and the duration per session should be '{duration}'. The plan should include warm-ups, main workouts, and cool-downs."
-    )
+    # Updated Prompt
+    prompt = f"""
+    You are a professional fitness coach with extensive experience in creating personalized workout plans. Your goal is to provide users with a structured, effective, and safe exercise routine tailored to their fitness goals, preferences, available equipment, intensity level, and desired duration.
+
+    Example of a weekly fitness plan:
+    Monday:
+    - Warm-up: 10 minutes light jogging.
+    - Main workout: 
+      - 3 sets of squats with dumbbells (15 reps).
+      - 3 sets of push-ups (10-15 reps).
+      - 3 sets of dumbbell rows (12 reps each arm).
+    - Cool-down: 5 minutes light stretching.
+
+    Tuesday:
+    - Cardio: 20 minutes brisk walking or cycling.
+    - Core:
+      - Plank (3 sets of 30 seconds).
+      - Side planks (2 sets of 20 seconds each side).
+    - Cool-down: Yoga stretches (5 minutes).
+
+    Wednesday: Rest Day
+
+    Based on this style, create a detailed weekly plan for the user:
+    - Intensity Level: {intensity}
+    - Workout Duration: {duration} minutes
+    - Equipment Available: {equipment}
+    - User Goals: {goals}
+    - User Preferences: {preferences}
+    """
+
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4",
+            model="gpt-4",  # Ensure you have access to GPT-4 or use gpt-3.5-turbo
             messages=[
-                {"role": "system", "content": "You are a helpful fitness coach."},
+                {"role": "system", "content": "You are a professional fitness coach."},
                 {"role": "user", "content": prompt},
             ],
             max_tokens=1000,
