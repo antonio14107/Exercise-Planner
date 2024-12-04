@@ -1,15 +1,15 @@
 from flask import Flask, render_template, request, send_file
-import openai
+from openai import OpenAI
 from fpdf import FPDF
 import os
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# OpenAI API setup
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Instantiate OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Log to confirm API key access in Render logs
+# Confirm if API key is found
 print(f"OpenAI API Key Found: {'OPENAI_API_KEY' in os.environ}")
 
 # Route for the home page
@@ -38,8 +38,6 @@ def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
       - Side planks (2 sets of 20 seconds each side).
     - Cool-down: Yoga stretches (5 minutes).
 
-    Wednesday: Rest Day
-
     Based on this style, create a detailed weekly plan for the user:
     - Intensity Level: {intensity}
     - Workout Duration: {duration} minutes
@@ -48,53 +46,49 @@ def generate_fitness_plan(goals, preferences, equipment, intensity, duration):
     - User Preferences: {preferences}
     """
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4-turbo",  # Use "gpt-4-turbo" or "gpt-3.5-turbo" based on your access
+        response = client.chat.completions.create(
+            model="gpt-4-turbo",
             messages=[
-                {"role": "system", "content": "You are a professional fitness coach."},
+                {"role": "system", "content": "You are a fitness expert."},
                 {"role": "user", "content": prompt},
             ],
             max_tokens=1000,
+            temperature=0.7,
         )
-        return response.choices[0].message["content"].strip()
+        return response.choices[0].message.content.strip()
     except Exception as e:
-        return f"An error occurred while generating the plan: {e}"
+        return f"An error occurred while generating the plan: {str(e)}"
 
-# Function to save the plan as a PDF
+# Save the plan as a PDF
 def save_plan_as_pdf(plan):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
     pdf.multi_cell(0, 10, plan)
-    filename = os.path.join(os.getcwd(), "fitness_plan.pdf")
+    filename = "fitness_plan.pdf"
     pdf.output(filename)
     return filename
 
-# Route for generating the fitness plan
+# Route for plan generation
 @app.route("/plan", methods=["POST"])
 def plan():
-    # Retrieve form data
-    goals = request.form.get("goals")
-    preferences = request.form.get("preferences")
-    equipment = request.form.get("equipment", "None")
-    intensity = request.form.get("intensity")
-    duration = request.form.get("duration")
+    # Get data from form
+    goals = request.form.get("goals", "General fitness")
+    preferences = request.form.get("preferences", "No preferences")
+    equipment = request.form.get("equipment", "No equipment")
+    intensity = request.form.get("intensity", "Moderate")
+    duration = request.form.get("duration", "30")
 
-    # Generate the fitness plan
+    # Generate plan
     plan = generate_fitness_plan(goals, preferences, equipment, intensity, duration)
-
-    # Save the plan as a PDF
     pdf_filename = save_plan_as_pdf(plan)
-
     return render_template("plan.html", plan=plan, pdf_filename=pdf_filename)
 
-# Route for downloading the PDF
-@app.route("/download", methods=["GET"])
-def download():
-    filename = os.path.join(os.getcwd(), "fitness_plan.pdf")
+# Route to download the PDF
+@app.route("/download/<filename>")
+def download(filename):
     return send_file(filename, as_attachment=True)
 
-# Run the app
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    # Bind to 0.0.0.0 for Render compatibility
+    app.run(host="0.0.0.0", port=5000)
